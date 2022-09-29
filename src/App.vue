@@ -4,10 +4,7 @@
 
         <div class="card" v-for="movie in moviesData" :key="movie.title">
             <div>
-                <img
-                    :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`"
-                    alt=""
-                />
+                <img :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`" alt="" />
             </div>
             <div>title :{{ movie.title }}</div>
             <div>
@@ -23,15 +20,17 @@
             <div>
                 vote:
                 {{ movie.vote_average }}
+
+                <div v-for="(star, i) in turnVoteIntoStar(movie.vote_average)" :key="i">
+                    <i v-if="star === true" class="fa-solid fa-star">{{ star }}</i>
+                    <i v-else class="fa-regular fa-star">{{ star }}</i>
+                </div>
             </div>
         </div>
 
         <div class="card red" v-for="movie in seriesData" :key="movie.name">
             <div>
-                <img
-                    :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`"
-                    alt=""
-                />
+                <img :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`" alt="" />
             </div>
             <div>title :{{ movie.name }}</div>
             <div>
@@ -47,6 +46,11 @@
             <div>
                 vote:
                 {{ movie.vote_average }}
+
+                <div v-for="(star, i) in turnVoteIntoStar(movie.vote_average)" :key="i">
+                    <i v-if="star === true" class="fa-solid fa-star">{{ star }}</i>
+                    <i v-else class="fa-regular fa-star">{{ star }}</i>
+                </div>
             </div>
         </div>
 
@@ -93,6 +97,7 @@ export default {
             seriesData: [],
             query: "matrix",
             categoryToSearch: "movie",
+            starsStatus: [false, false, false, false, false],
         };
     },
     methods: {
@@ -120,11 +125,21 @@ export default {
                     console.log(error);
                 });
         },
+        turnVoteIntoStar(vote) {
+            this.starsStatus = [false, false, false, false, false];
+
+            let numberOfCheckedStars = Math.round(vote / 2);
+
+            for (let index = 0; index < numberOfCheckedStars; index++) {
+                this.starsStatus[index] = true;
+            }
+
+            return this.starsStatus; // questo è un array che indica quante stelle sono piene(accese) e quante no
+        },
     },
 
-    turnVoteIntoStar(vote) {
-        let numberOfStars = Math.round(vote / 2);
-        return numberOfStars;
+    mounted() {
+        this.turnVoteIntoStar(2);
     },
 };
 </script>
@@ -151,5 +166,8 @@ export default {
 }
 .red {
     background-color: red;
+}
+.checked {
+    color: rgb(255, 255, 0);
 }
 </style>
