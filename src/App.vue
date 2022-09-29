@@ -15,7 +15,9 @@
                 {{ movie.original_title }}
             </div>
             <div>
+                <lang-flag :iso="movie.original_language" />
                 language:
+
                 {{ movie.original_language }}
             </div>
             <div>
@@ -28,6 +30,7 @@
 
 <script>
 import axios from "axios";
+import LangFlag from "vue-lang-code-flags";
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 import MainHeader from "./components/primary/MainHeader.vue";
@@ -35,7 +38,7 @@ import MainHeader from "./components/primary/MainHeader.vue";
 ////////////////////////////////////////////////////////////////////////
 export default {
     name: "App",
-    components: { MainHeader },
+    components: { MainHeader, LangFlag },
     data() {
         return {
             apiKey: "4bb110e695fd9ed24938916c07a0dc08", //Key
