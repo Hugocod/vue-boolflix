@@ -37,15 +37,20 @@
                 <p>{{ singleMovieData[0].overview }}</p>
             </div>
 
-            <div class="cast-container">
+            <!--  <casting-card :castValues="castData"></casting-card> -->
+            <casting-card :castValues="castData"></casting-card>
+            <!-- <casting-card :castValues="['dio', 'dio']"></casting-card> -->
+
+            <!--        <div class="cast-container">
                 <h2>cast</h2>
                 <div class="actor">
-                    <figure v-for="(n, i) in 6" :key="i">
-                        <img :src="`https://image.tmdb.org/t/p/w185${castData[i].profile_path}`" alt="" />
-                        <figcaption>{{ castData[i].name }}</figcaption>
+                    <figure>
+                        <img :src="`https://image.tmdb.org/t/p/w185${getApiDataCast(this.singleMovieData[0].id, this.apiKey).profile_path}`" alt="" />
+
+                        <figcaption>{{ getApiDataCast(this.singleMovieData[0].id, this.apiKey) }}</figcaption>
                     </figure>
                 </div>
-            </div>
+            </div>  -->
 
             <!--  /////////////////////////////////////////////////////////////////////
              /////////////////////////////////////////////////////////////////////
@@ -58,18 +63,20 @@
 <script>
 import axios from "axios";
 import LangFlag from "vue-lang-code-flags";
+import CastingCard from "./CastingCard.vue";
+
 export default {
     name: "FullScreenCard",
     data() {
         return {
             singleMovieData: this.selectedMovie, // l'array che contiene l'oggetto con le info del singolo film scelto dall'utente
             starsStatus: [false, false, false, false, false], // determina quali stelle saranno piene e quali no nelle review
-            castData: "ciao",
             apiKey: "4bb110e695fd9ed24938916c07a0dc08",
+            castData: [],
         };
     },
     props: { url: String, selectedMovie: Array },
-    components: { LangFlag },
+    components: { LangFlag, CastingCard },
 
     methods: {
         turnVoteIntoStar(vote) {
@@ -89,17 +96,27 @@ export default {
                 .get(`https://api.themoviedb.org/3/movie/${movieID}/credits?api_key=${apiKey}&language=en-US`)
                 .then((res) => {
                     if (res.status === 200) {
-                        this.castData = res.data.cast;
+                        /*  let castData = []; */
+                        this.castData.push(...res.data.cast);
+                        console.log(this.castData);
+                        /* return castData; */
+                        return this.castData;
+                    } else {
+                        console.log(null);
                     }
                 })
                 .catch((error) => {
                     console.log(error);
                 });
         },
-    },
 
-    async mounted() {
-        this.getApiDataCast(this.singleMovieData[0].id, this.apiKey);
+        getTheCast() {
+            let x = this.getApiDataCast(this.singleMovieData[0].id, this.apiKey);
+            return x;
+        },
+    },
+    setup() {
+        this.getTheCast();
     },
 };
 </script>
@@ -172,32 +189,6 @@ h2 {
     font-size: 0.7rem;
     text-transform: uppercase;
     color: gray;
-}
-
-.actor {
-    display: flex;
-    flex-wrap: wrap;
-
-    img {
-        height: 70px;
-        width: 70px;
-
-        object-fit: cover;
-        border-radius: 1rem;
-    }
-
-    figcaption {
-        font-size: 0.7rem;
-        text-align: center;
-        max-width: 70px;
-    }
-
-    figure {
-        margin: 0;
-        padding: 0.7rem;
-
-        color: white;
-    }
 }
 
 .release-rating {

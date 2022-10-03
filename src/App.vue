@@ -17,6 +17,16 @@
             ></single-card>
         </div>
 
+        <div class="cards-container">
+            <single-card
+                @isClicked="toggleFullCard"
+                v-for="series in seriesData"
+                :key="series.id"
+                :id="series.id"
+                :url="`https://image.tmdb.org/t/p/w400${series.poster_path}`"
+            ></single-card>
+        </div>
+
         <!-- ///////////////////////////////////////////////////////////////////////////// -->
         <!-- ///////////////////////////////////////////////////////////////////////////// -->
 
@@ -123,6 +133,7 @@ export default {
                 .then((res) => {
                     if (res.status === 200) {
                         dataContainer.push(...res.data.results);
+                        console.log(dataContainer);
                     }
                 })
                 .catch((error) => {
@@ -180,6 +191,7 @@ body {
     box-sizing: border-box;
 
     position: relative;
+    background-color: black;
 }
 
 h1,
@@ -196,5 +208,10 @@ p {
 .cards-container {
     display: flex;
     flex-wrap: wrap;
+    padding-top: 15vh;
+    background-color: black;
+
+    width: 92%;
+    margin: 0 auto;
 }
 </style>
