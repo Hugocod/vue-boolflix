@@ -2,9 +2,27 @@
     <div id="app">
         <main-header @onWrite="updateTextToSearch" />
 
-        <div class="card" v-for="movie in moviesData" :key="movie.title">
+        <full-screen-card v-if="cardIsClicked" @closeCard="toggleFullCard" :selectedMovie="singleMovieData"></full-screen-card>
+
+        <!-- ///////////////////////////////////////////////////////////////////////////// -->
+        <!-- ///////////////////////////////////////////////////////////////////////////// -->
+
+        <div class="cards-container">
+            <single-card
+                @isClicked="toggleFullCard"
+                v-for="movie in moviesData"
+                :key="movie.id"
+                :id="movie.id"
+                :url="`https://image.tmdb.org/t/p/w400${movie.poster_path}`"
+            ></single-card>
+        </div>
+
+        <!-- ///////////////////////////////////////////////////////////////////////////// -->
+        <!-- ///////////////////////////////////////////////////////////////////////////// -->
+
+        <!--  <div class="card" v-for="movie in moviesData" :key="movie.title">
             <div>
-                <img :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`" alt="" />
+                <single-card :url="`https://image.tmdb.org/t/p/w200${movie.backdrop_path}`"></single-card>
             </div>
             <div>title :{{ movie.title }}</div>
             <div>
@@ -52,52 +70,38 @@
                     <i v-else class="fa-regular fa-star">{{ star }}</i>
                 </div>
             </div>
-        </div>
-
-        <!--   <div class="card" v-for="(movie, i) in seriesData" :key="i">
-            <div>
-                <img
-                    :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`"
-                    alt=""
-                />
-            </div>
-            <div>title :{{ movie.title }}</div>
-            <div>
-                original title:
-                {{ movie.original_title }}
-            </div>
-            <div>
-                <lang-flag :iso="movie.original_language" />
-                language:
-                {{ movie.original_language }}
-            </div>
-            <div>
-                vote:
-                {{ movie.vote_average }}
-            </div>
         </div> -->
     </div>
 </template>
 
 <script>
 import axios from "axios";
-import LangFlag from "vue-lang-code-flags";
+/* import LangFlag from "vue-lang-code-flags"; */
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 import MainHeader from "./components/primary/MainHeader.vue";
+import SingleCard from "./components/secondary/SingleCard.vue";
+import FullScreenCard from "./components/secondary/FullScreenCard.vue";
+
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 export default {
     name: "App",
-    components: { MainHeader, LangFlag },
+    components: { MainHeader, /* LangFlag */ SingleCard, FullScreenCard },
     data() {
         return {
-            apiKey: "4bb110e695fd9ed24938916c07a0dc08", //Key
+            ///////////////////////////////////////////////////////// API variables
+            apiKey: "4bb110e695fd9ed24938916c07a0dc08",
             moviesData: [],
             seriesData: [],
-            query: "matrix",
+            singleMovieData: [],
+            query: "",
             categoryToSearch: "movie",
-            starsStatus: [false, false, false, false, false],
+            ///////////////////////////////////////////////////////// API variables ----- /
+
+            cardIsClicked: false, // serve a togglare la visualizzazione della card estesa con tutte le info
+
+            selectedCardId: "", // identifica la card su cui ha cliccato l'utente, serve a mostrargli le informazioni corrette
         };
     },
     methods: {
@@ -116,31 +120,45 @@ export default {
                 .get(
                     `https://api.themoviedb.org/3/search/${categoryToSearch}?api_key=${apiKey}&language=en-US&query=${query}&page=1&include_adult=false`
                 )
-                .then((result) => {
-                    console.log(result.data.results);
-                    dataContainer.push(...result.data.results);
-                    console.log(dataContainer);
+                .then((res) => {
+                    if (res.status === 200) {
+                        dataContainer.push(...res.data.results);
+                    }
                 })
                 .catch((error) => {
                     console.log(error);
                 });
         },
-        turnVoteIntoStar(vote) {
-            this.starsStatus = [false, false, false, false, false];
 
-            let numberOfCheckedStars = Math.round(vote / 2);
+        toggleFullCard(id) {
+            this.cardIsClicked = !this.cardIsClicked;
+            console.log(id);
 
-            for (let index = 0; index < numberOfCheckedStars; index++) {
-                this.starsStatus[index] = true;
-            }
+            this.selectedCardId = id; // punta alla card cliccata
 
-            return this.starsStatus; // questo è un array che indica quante stelle sono piene(accese) e quante no
+            this.singleMovieData = this.getSelectedMovieInfo();
+        },
+
+        getSelectedMovieInfo() {
+            /////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////// funzione per ottenere le info sul film cliccato dall'utente
+            let selectedMovie = [];
+
+            this.moviesData.forEach((element) => {
+                if (element.id === this.selectedCardId) {
+                    selectedMovie.push(element);
+                } else {
+                    null;
+                }
+            });
+
+            return selectedMovie;
+            /////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////// ----/
         },
     },
 
-    mounted() {
-        this.turnVoteIntoStar(2);
-    },
+    mounted() {},
 };
 </script>
 
@@ -151,23 +169,32 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
-    margin-top: 60px;
-}
-.card {
-    display: flex;
+
     width: 100%;
-    background-color: rgb(223, 223, 223);
-    margin: 1rem 0rem;
-    div {
-        border: 2px solid black;
-        margin: 1rem;
-        padding: 1rem;
-    }
+    margin: 0 auto;
 }
-.red {
-    background-color: red;
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    position: relative;
 }
-.checked {
-    color: rgb(255, 255, 0);
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+    padding: 0;
+}
+
+.cards-container {
+    display: flex;
+    flex-wrap: wrap;
 }
 </style>

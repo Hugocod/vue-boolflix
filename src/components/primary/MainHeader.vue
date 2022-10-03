@@ -2,9 +2,7 @@
     <header>
         <form>
             <input type="text" v-model="userText" />
-            <button type="submit" @click.prevent="$emit('onWrite', userText)">
-                Submit
-            </button>
+            <button type="submit" @click.prevent="$emit('onWrite', userText)">Submit</button>
         </form>
     </header>
 </template>
@@ -20,4 +18,9 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped lang="scss">
+header {
+    background-color: rgb(189, 16, 16);
+    padding: 2rem;
+}
+</style>
