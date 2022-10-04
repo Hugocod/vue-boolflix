@@ -2,14 +2,15 @@
     <div id="app">
         <main-header @onWrite="updateTextToSearch" />
 
-        <full-screen-card v-if="cardIsClicked" @closeCard="toggleFullCard" :selectedMovie="singleMovieData"></full-screen-card>
+        <full-screen-card v-if="cardIsClicked" @closeCard="toggleFullScreenCard" :selectedMovie="singleMovieData"></full-screen-card>
+        <full-screen-card v-if="cardIsClicked" @closeCard="toggleFullScreenCard" :selectedMovie="singleSeriesData"></full-screen-card>
 
         <!-- ///////////////////////////////////////////////////////////////////////////// -->
         <!-- ///////////////////////////////////////////////////////////////////////////// -->
 
         <div class="cards-container">
             <single-card
-                @isClicked="toggleFullCard"
+                @isClicked="takeID"
                 v-for="movie in moviesData"
                 :key="movie.id"
                 :id="movie.id"
@@ -19,74 +20,32 @@
 
         <div class="cards-container">
             <single-card
+                @isClicked="takeID"
+                v-for="movie in seriesData"
+                :key="movie.id"
+                :id="movie.id"
+                :url="`https://image.tmdb.org/t/p/w400${movie.poster_path}`"
+            ></single-card>
+        </div>
+
+        <!--     <div class="cards-container">
+            <single-card
                 @isClicked="toggleFullCard"
                 v-for="series in seriesData"
                 :key="series.id"
                 :id="series.id"
                 :url="`https://image.tmdb.org/t/p/w400${series.poster_path}`"
             ></single-card>
-        </div>
-
-        <!-- ///////////////////////////////////////////////////////////////////////////// -->
-        <!-- ///////////////////////////////////////////////////////////////////////////// -->
-
-        <!--  <div class="card" v-for="movie in moviesData" :key="movie.title">
-            <div>
-                <single-card :url="`https://image.tmdb.org/t/p/w200${movie.backdrop_path}`"></single-card>
-            </div>
-            <div>title :{{ movie.title }}</div>
-            <div>
-                original title:
-                {{ movie.original_title }}
-            </div>
-            <div>
-                <lang-flag :iso="movie.original_language" />
-                language:
-
-                {{ movie.original_language }}
-            </div>
-            <div>
-                vote:
-                {{ movie.vote_average }}
-
-                <div v-for="(star, i) in turnVoteIntoStar(movie.vote_average)" :key="i">
-                    <i v-if="star === true" class="fa-solid fa-star">{{ star }}</i>
-                    <i v-else class="fa-regular fa-star">{{ star }}</i>
-                </div>
-            </div>
-        </div>
-
-        <div class="card red" v-for="movie in seriesData" :key="movie.name">
-            <div>
-                <img :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`" alt="" />
-            </div>
-            <div>title :{{ movie.name }}</div>
-            <div>
-                original title:
-                {{ movie.original_name }}
-            </div>
-            <div>
-                <lang-flag :iso="movie.original_language" />
-                language:
-
-                {{ movie.original_language }}
-            </div>
-            <div>
-                vote:
-                {{ movie.vote_average }}
-
-                <div v-for="(star, i) in turnVoteIntoStar(movie.vote_average)" :key="i">
-                    <i v-if="star === true" class="fa-solid fa-star">{{ star }}</i>
-                    <i v-else class="fa-regular fa-star">{{ star }}</i>
-                </div>
-            </div>
         </div> -->
+
+        <!-- ///////////////////////////////////////////////////////////////////////////// -->
+        <!-- ///////////////////////////////////////////////////////////////////////////// -->
     </div>
 </template>
 
 <script>
 import axios from "axios";
-/* import LangFlag from "vue-lang-code-flags"; */
+
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 import MainHeader from "./components/primary/MainHeader.vue";
@@ -97,7 +56,7 @@ import FullScreenCard from "./components/secondary/FullScreenCard.vue";
 ////////////////////////////////////////////////////////////////////////
 export default {
     name: "App",
-    components: { MainHeader, /* LangFlag */ SingleCard, FullScreenCard },
+    components: { MainHeader, SingleCard, FullScreenCard },
     data() {
         return {
             ///////////////////////////////////////////////////////// API variables
@@ -105,12 +64,12 @@ export default {
             moviesData: [],
             seriesData: [],
             singleMovieData: [],
+            singleSeriesData: [],
             query: "",
             categoryToSearch: "movie",
             ///////////////////////////////////////////////////////// API variables ----- /
 
             cardIsClicked: false, // serve a togglare la visualizzazione della card estesa con tutte le info
-
             selectedCardId: "", // identifica la card su cui ha cliccato l'utente, serve a mostrargli le informazioni corrette
         };
     },
@@ -141,35 +100,52 @@ export default {
                 });
         },
 
-        toggleFullCard(id) {
-            this.cardIsClicked = !this.cardIsClicked;
-            console.log(id);
+        takeID(id) {
+            /////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////
 
-            this.selectedCardId = id; // punta alla card cliccata
+            this.toggleFullScreenCard(); // fa apparire/scomparire il componente full screen
 
-            this.singleMovieData = this.getSelectedMovieInfo();
+            this.selectedCardId = id; // mette l'ID del film della card cliccata dall'utente nella Variabile selectedCard
+            this.singleMovieData = this.getSelectedMovieInfo(this.moviesData); // valorizza con l'oggetto con tutte le info che corrisponde all'id della carta cliccata
+            this.singleSeriesData = this.getSelectedMovieInfo(this.seriesData); // valorizza con l'oggetto con tutte le info che corrisponde all'id della carta cliccata
+
+            console.log(this.selectedCardId);
+            /////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////
         },
 
-        getSelectedMovieInfo() {
+        toggleFullScreenCard() {
+            /////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////
+
+            this.cardIsClicked = !this.cardIsClicked; // fa apparire/scomparire il componente full screen
+
+            /////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////
+        },
+
+        getSelectedMovieInfo(arrayContainer) {
             /////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////// funzione per ottenere le info sul film cliccato dall'utente
+
             let selectedMovie = [];
 
-            this.moviesData.forEach((element) => {
+            arrayContainer.forEach((element) => {
+                // filtra i film/serie alla ricerca di quello contenente l'id del film scelto dall'utente
                 if (element.id === this.selectedCardId) {
-                    selectedMovie.push(element);
+                    selectedMovie.push(element); // se l'id è uguale lo inserisce in selected movie.
                 } else {
                     null;
                 }
             });
 
             return selectedMovie;
+
             /////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////// ----/
         },
     },
-
-    mounted() {},
 };
 </script>
 
