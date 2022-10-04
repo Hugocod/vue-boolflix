@@ -148,6 +148,6 @@ h2 {
 }
 
 .mini-title {
-    color: rgb(89, 88, 88);
+    color: rgb(121, 121, 121);
 }
 </style>

@@ -157,6 +157,8 @@ export default {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    width: 100%;
 }
 
 body {
@@ -167,6 +169,8 @@ body {
     position: relative;
     background-color: rgb(0, 0, 0);
     min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 h1,

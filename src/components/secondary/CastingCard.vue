@@ -1,11 +1,11 @@
 <template>
     <div class="container">
-        <figure v-for="n in 5" :key="n">
+        <figure v-for="(n, i) in 5" :key="n">
             <img
                 v-if="isAvailable"
                 @error="isAvailable = false"
-                :src="`https://image.tmdb.org/t/p/w185${castData[n].profile_path}`"
-                :alt="castData[n].name"
+                :src="`https://image.tmdb.org/t/p/w185${castData[i].profile_path}`"
+                :alt="castData[i].name"
             />
             <img
                 v-else
