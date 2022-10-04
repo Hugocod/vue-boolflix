@@ -1,28 +1,58 @@
 <template>
-    <figure>
-        <!--   <img :src="`https://image.tmdb.org/t/p/w185${castData}`" alt="" /> -->
-        <figcaption>{{ castData[0].name }}</figcaption>
-        <h1>ciaooooooooooo</h1>
-    </figure>
+    <div class="container">
+        <figure v-for="n in 5" :key="n">
+            <img
+                v-if="isAvailable"
+                @error="isAvailable = false"
+                :src="`https://image.tmdb.org/t/p/w185${castData[n].profile_path}`"
+                :alt="castData[n].name"
+            />
+            <img
+                v-else
+                src="https://marvel-b1-cdn.bc0a.com/f00000000225238/cdn.shopify.com/s/files/1/0051/3798/9747/products/no-image-large_0ba9d40b-847a-44f4-8c89-f9a3ff41573b.jpg?v=1657123815&width=1024"
+            />
+            <figcaption>{{ castData[n].name }}</figcaption>
+        </figure>
+    </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
     name: "CastingCard",
     data() {
         return {
-            castData: this.castValues,
+            apiKey: "4bb110e695fd9ed24938916c07a0dc08",
+            castData: [],
+            isAvailable: true,
         };
     },
     props: {
-        castValues: Array,
+        id: Number,
+    },
+
+    created() {
+        axios
+            .get(`https://api.themoviedb.org/3/movie/${this.id}/credits?api_key=${this.apiKey}&language=en-US`)
+            .then((res) => {
+                if (res.status === 200) {
+                    this.castData.push(...res.data.cast);
+                    console.log(this.castData);
+                } else {
+                    console.log(null);
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     },
 };
 </script>
 
 <style scoped lang="scss">
 .container {
-    background-color: rgb(186, 92, 92);
+    display: flex;
+    flex-wrap: wrap;
 }
 
 img {

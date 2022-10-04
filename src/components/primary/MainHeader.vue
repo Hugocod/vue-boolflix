@@ -1,12 +1,12 @@
 <template>
     <header>
         <div class="wrapper">
-            <h1><span>Movie</span>finder</h1>
+            <h1><span>Movie</span>finder<sup>by hugo</sup></h1>
             <form>
                 <input
                     type="text"
                     v-model="userText"
-                    placeholder="search...😎 "
+                    placeholder="search...👀 "
                     @keyup.enter.prevent="clearText"
                     @keydown.enter.prevent="$emit('onWrite', userText)"
                 />
@@ -65,6 +65,14 @@ header {
             span {
                 font-weight: 800;
                 color: white;
+            }
+
+            sup {
+                font-size: 0.7rem;
+                margin: 0;
+                padding: 0;
+                font-family: "Avenir", sans-serif;
+                vertical-align: bottom;
             }
         }
     }

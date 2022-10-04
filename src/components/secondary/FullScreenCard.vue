@@ -11,44 +11,34 @@
 
             <div class="release-rating">
                 <div>
-                    <h2>release</h2>
+                    <h2 class="mini-title">release</h2>
                     <h2 v-if="isThisAMovie">{{ singleMovieData[0].release_date }}</h2>
                     <h2 v-else>{{ singleMovieData[0].first_air_date }}</h2>
                 </div>
 
                 <div>
-                    <h2>rating</h2>
+                    <h2 class="mini-title">rating</h2>
                     <div class="stars-container">
                         <stars-rating :vote="singleMovieData[0].vote_average" />
                     </div>
                 </div>
 
                 <div>
-                    <h2>Language</h2>
+                    <h2 class="mini-title">Language</h2>
                     <!-- pacchetto icone bandiere compatibile con ISO 639-1 (lo stesso standard usato da TMDB)  -->
                     <lang-flag :iso="singleMovieData[0].original_language" />
                 </div>
             </div>
 
             <div>
-                <h2>Overview</h2>
+                <h2 class="mini-title">Overview</h2>
                 <p>{{ singleMovieData[0].overview }}</p>
             </div>
 
-            <!--  <casting-card :castValues="castData"></casting-card> -->
-            <casting-card :castValues="castData"></casting-card>
-            <!-- <casting-card :castValues="['dio', 'dio']"></casting-card> -->
-
-            <!--        <div class="cast-container">
-                <h2>cast</h2>
-                <div class="actor">
-                    <figure>
-                        <img :src="`https://image.tmdb.org/t/p/w185${getApiDataCast(this.singleMovieData[0].id, this.apiKey).profile_path}`" alt="" />
-
-                        <figcaption>{{ getApiDataCast(this.singleMovieData[0].id, this.apiKey) }}</figcaption>
-                    </figure>
-                </div>
-            </div>  -->
+            <div>
+                <h2 class="mini-title">Cast</h2>
+                <casting-card :id="singleMovieData[0].id"></casting-card>
+            </div>
 
             <!--  /////////////////////////////////////////////////////////////////////
              /////////////////////////////////////////////////////////////////////
@@ -59,7 +49,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import LangFlag from "vue-lang-code-flags";
 import CastingCard from "./CastingCard.vue";
 import StarsRating from "./StarsRating.vue";
@@ -70,7 +59,7 @@ export default {
     data() {
         return {
             singleMovieData: this.selectedMovie, // l'array che contiene l'oggetto con le info del singolo film scelto dall'utente
-            apiKey: "4bb110e695fd9ed24938916c07a0dc08",
+
             castData: [],
             isThisAMovie: this.isMovie, // una props passata dal componente padre che specifica se l'oggetto contiente una serie o un film. é necessaria per gestire le diverse chiavi tra film e serie nella api di TMDB
         };
@@ -79,35 +68,6 @@ export default {
     props: { url: String, selectedMovie: Array, isMovie: Boolean },
 
     components: { LangFlag, CastingCard, StarsRating },
-
-    methods: {
-        getApiDataCast(movieID, apiKey) {
-            axios
-                .get(`https://api.themoviedb.org/3/movie/${movieID}/credits?api_key=${apiKey}&language=en-US`)
-                .then((res) => {
-                    if (res.status === 200) {
-                        /*  let castData = []; */
-                        this.castData.push(...res.data.cast);
-                        console.log(this.castData);
-                        /* return castData; */
-                        return this.castData;
-                    } else {
-                        console.log(null);
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        },
-
-        getTheCast() {
-            let x = this.getApiDataCast(this.singleMovieData[0].id, this.apiKey);
-            return x;
-        },
-    },
-    setup() {
-        this.getTheCast();
-    },
 };
 </script>
 
@@ -178,11 +138,16 @@ h1 {
 h2 {
     font-size: 0.7rem;
     text-transform: uppercase;
-    color: gray;
+    color: rgb(255, 255, 255);
+    padding-bottom: 0.4rem;
 }
 
 .release-rating {
     display: flex;
-    gap: 2rem;
+    gap: 3rem;
+}
+
+.mini-title {
+    color: rgb(89, 88, 88);
 }
 </style>

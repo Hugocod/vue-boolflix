@@ -24,9 +24,21 @@ export default {
 <style scoped lang="scss">
 .container {
     padding: 1rem 1rem;
-    background-color: black;
 
-    width: calc(100% / 4 - 2rem);
+    width: calc(100% / 5 - 2rem);
+
+    @media only screen and (max-width: 1100px) {
+        width: calc(100% / 4 - 2rem);
+    }
+    @media only screen and (max-width: 700px) {
+        width: calc(100% / 3 - 2rem);
+    }
+    @media only screen and (max-width: 500px) {
+        width: calc(100% / 2 - 2rem);
+    }
+    @media only screen and (max-width: 400px) {
+        width: 100%;
+    }
 
     img {
         width: 100%;
@@ -36,6 +48,7 @@ export default {
 
         &:hover {
             transform: scale(1.07);
+            outline: 2px solid white;
         }
     }
 
