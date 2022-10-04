@@ -100,7 +100,17 @@ export default {
 
 .description {
     z-index: 100;
-    width: 70%;
+    width: 40%;
+
+    @media only screen and (max-width: 1100px) {
+        width: 60%;
+    }
+    @media only screen and (max-width: 800px) {
+        width: 80%;
+    }
+    @media only screen and (max-width: 600px) {
+        width: 100%;
+    }
     min-height: 80vh;
 
     padding: 3rem;
