@@ -2,64 +2,48 @@
     <div id="app">
         <main-header @onWrite="updateTextToSearch" />
 
-        <full-screen-card v-if="cardIsClicked" @closeCard="toggleFullScreenCard" :selectedMovie="singleMovieData"></full-screen-card>
-        <full-screen-card v-if="cardIsClicked" @closeCard="toggleFullScreenCard" :selectedMovie="singleSeriesData"></full-screen-card>
+        <full-screen-card v-if="cardIsClicked" :isMovie="true" @closeCard="toggleFullScreenCard" :selectedMovie="singleMovieData" />
+        <full-screen-card v-if="cardIsClicked" :isMovie="false" @closeCard="toggleFullScreenCard" :selectedMovie="singleSeriesData" />
 
-        <!-- ///////////////////////////////////////////////////////////////////////////// -->
-        <!-- ///////////////////////////////////////////////////////////////////////////// -->
-
-        <div class="cards-container">
-            <single-card
-                @isClicked="takeID"
-                v-for="movie in moviesData"
-                :key="movie.id"
-                :id="movie.id"
-                :url="`https://image.tmdb.org/t/p/w400${movie.poster_path}`"
-            ></single-card>
+        <div class="cards-block">
+            <h1>Movies</h1>
+            <div class="cards-container">
+                <single-card
+                    @isClicked="takeID"
+                    v-for="movie in moviesData"
+                    :key="movie.id"
+                    :id="movie.id"
+                    :url="`https://image.tmdb.org/t/p/w400${movie.poster_path}`"
+                ></single-card>
+            </div>
         </div>
 
-        <div class="cards-container">
-            <single-card
-                @isClicked="takeID"
-                v-for="movie in seriesData"
-                :key="movie.id"
-                :id="movie.id"
-                :url="`https://image.tmdb.org/t/p/w400${movie.poster_path}`"
-            ></single-card>
+        <div class="cards-block">
+            <h1>Series</h1>
+            <div class="cards-container">
+                <single-card
+                    @isClicked="takeID"
+                    v-for="singleSeries in seriesData"
+                    :key="singleSeries.id"
+                    :id="singleSeries.id"
+                    :url="`https://image.tmdb.org/t/p/w400${singleSeries.poster_path}`"
+                ></single-card>
+            </div>
         </div>
-
-        <!--     <div class="cards-container">
-            <single-card
-                @isClicked="toggleFullCard"
-                v-for="series in seriesData"
-                :key="series.id"
-                :id="series.id"
-                :url="`https://image.tmdb.org/t/p/w400${series.poster_path}`"
-            ></single-card>
-        </div> -->
-
-        <!-- ///////////////////////////////////////////////////////////////////////////// -->
-        <!-- ///////////////////////////////////////////////////////////////////////////// -->
     </div>
 </template>
 
 <script>
 import axios from "axios";
-
-////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
 import MainHeader from "./components/primary/MainHeader.vue";
 import SingleCard from "./components/secondary/SingleCard.vue";
 import FullScreenCard from "./components/secondary/FullScreenCard.vue";
 
-////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
 export default {
     name: "App",
     components: { MainHeader, SingleCard, FullScreenCard },
     data() {
         return {
-            ///////////////////////////////////////////////////////// API variables
             apiKey: "4bb110e695fd9ed24938916c07a0dc08",
             moviesData: [],
             seriesData: [],
@@ -67,7 +51,6 @@ export default {
             singleSeriesData: [],
             query: "",
             categoryToSearch: "movie",
-            ///////////////////////////////////////////////////////// API variables ----- /
 
             cardIsClicked: false, // serve a togglare la visualizzazione della card estesa con tutte le info
             selectedCardId: "", // identifica la card su cui ha cliccato l'utente, serve a mostrargli le informazioni corrette
@@ -75,6 +58,9 @@ export default {
     },
     methods: {
         updateTextToSearch(newTextToSearch) {
+            /////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////
+
             console.log(newTextToSearch);
             this.query = `${newTextToSearch}`;
             console.log("ciao");
@@ -83,8 +69,15 @@ export default {
             this.seriesData = [];
             this.getApiData("tv", this.apiKey, this.query, this.seriesData);
             this.getApiData("movie", this.apiKey, this.query, this.moviesData);
+
+            /////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////
         },
+
         getApiData(categoryToSearch, apiKey, query, dataContainer) {
+            /////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////
+
             axios
                 .get(
                     `https://api.themoviedb.org/3/search/${categoryToSearch}?api_key=${apiKey}&language=en-US&query=${query}&page=1&include_adult=false`
@@ -98,6 +91,9 @@ export default {
                 .catch((error) => {
                     console.log(error);
                 });
+
+            /////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////
         },
 
         takeID(id) {
@@ -181,13 +177,22 @@ p {
     padding: 0;
 }
 
-.cards-container {
-    display: flex;
-    flex-wrap: wrap;
-    padding-top: 15vh;
-    background-color: black;
-
-    width: 92%;
+.cards-block {
+    width: 90%;
     margin: 0 auto;
+
+    h1 {
+        color: rgb(101, 100, 100);
+        text-align: left;
+        font-size: 1rem;
+        text-transform: uppercase;
+    }
+
+    .cards-container {
+        display: flex;
+        flex-wrap: wrap;
+        /* padding-top: 15vh; */
+        background-color: black;
+    }
 }
 </style>

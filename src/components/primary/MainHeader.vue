@@ -40,7 +40,7 @@ header {
     -webkit-backdrop-filter: blur(11.4px);
     border: 1px solid rgba(0, 0, 0, 1);
 
-    position: fixed;
+    /* position: fixed; */
     top: 0;
     left: 0;
     width: 100%;

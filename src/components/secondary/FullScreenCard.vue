@@ -5,29 +5,27 @@
         :style="`background-image: url(https://image.tmdb.org/t/p/w1280${singleMovieData[0].backdrop_path})`"
     >
         <div class="description">
-            <!--  /////////////////////////////////////////////////////////////////////
-             /////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////// -->
-            <h1>{{ singleMovieData[0].title }}</h1>
+            <!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+            <h1 v-if="isThisAMovie">{{ singleMovieData[0].title }}</h1>
+            <h1 v-else>{{ singleMovieData[0].name }}</h1>
 
             <div class="release-rating">
                 <div>
                     <h2>release</h2>
-                    <h2>{{ singleMovieData[0].release_date }}</h2>
+                    <h2 v-if="isThisAMovie">{{ singleMovieData[0].release_date }}</h2>
+                    <h2 v-else>{{ singleMovieData[0].first_air_date }}</h2>
                 </div>
 
                 <div>
                     <h2>rating</h2>
                     <div class="stars-container">
-                        <div v-for="(star, i) in turnVoteIntoStar(singleMovieData[0].vote_average)" :key="i">
-                            <i v-if="star === true" class="fa-solid fa-star"></i>
-                            <i v-else class="fa-regular fa-star"></i>
-                        </div>
+                        <stars-rating :vote="singleMovieData[0].vote_average" />
                     </div>
                 </div>
 
                 <div>
                     <h2>Language</h2>
+                    <!-- pacchetto icone bandiere compatibile con ISO 639-1 (lo stesso standard usato da TMDB)  -->
                     <lang-flag :iso="singleMovieData[0].original_language" />
                 </div>
             </div>
@@ -64,33 +62,25 @@
 import axios from "axios";
 import LangFlag from "vue-lang-code-flags";
 import CastingCard from "./CastingCard.vue";
+import StarsRating from "./StarsRating.vue";
 
 export default {
     name: "FullScreenCard",
+
     data() {
         return {
             singleMovieData: this.selectedMovie, // l'array che contiene l'oggetto con le info del singolo film scelto dall'utente
-            starsStatus: [false, false, false, false, false], // determina quali stelle saranno piene e quali no nelle review
             apiKey: "4bb110e695fd9ed24938916c07a0dc08",
             castData: [],
+            isThisAMovie: this.isMovie, // una props passata dal componente padre che specifica se l'oggetto contiente una serie o un film. é necessaria per gestire le diverse chiavi tra film e serie nella api di TMDB
         };
     },
-    props: { url: String, selectedMovie: Array },
-    components: { LangFlag, CastingCard },
+
+    props: { url: String, selectedMovie: Array, isMovie: Boolean },
+
+    components: { LangFlag, CastingCard, StarsRating },
 
     methods: {
-        turnVoteIntoStar(vote) {
-            this.starsStatus = [false, false, false, false, false];
-
-            let numberOfCheckedStars = Math.round(vote / 2);
-
-            for (let index = 0; index < numberOfCheckedStars; index++) {
-                this.starsStatus[index] = true;
-            }
-
-            return this.starsStatus; // questo è un array che indica quante stelle sono piene(accese) e quante no
-        },
-
         getApiDataCast(movieID, apiKey) {
             axios
                 .get(`https://api.themoviedb.org/3/movie/${movieID}/credits?api_key=${apiKey}&language=en-US`)
